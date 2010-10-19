@@ -21,33 +21,31 @@ module Cucumber
       end
       
       def step_mother
-        @step_mother ||= StepMother.new
+        @step_mother ||= Runtime.new
       end
       
       def load_features(content)
         feature_file = FeatureFile.new('spec.feature', content)
         features = Ast::Features.new
-        feature = feature_file.parse(options, {})
+        filters = []
+        feature = feature_file.parse(filters, {})
         features.add_feature(feature) if feature
         features
       end
     
       def run(features)
-        tree_walker = Cucumber::Ast::TreeWalker.new(@step_mother, [@formatter], options, STDOUT)
+        configuration = Cucumber::Configuration.default
+        tree_walker = Cucumber::Ast::TreeWalker.new(step_mother, [@formatter], configuration)
         tree_walker.visit_features(features)
       end
     
       def define_steps
         return unless step_defs = self.class.step_defs
-        rb = @step_mother.load_programming_language('rb')
-        dsl = Object.new 
+        rb = step_mother.load_programming_language('rb')
+        dsl = Object.new
         dsl.extend RbSupport::RbDsl
         dsl.instance_exec &step_defs
       end 
-
-      def options
-        @options ||= mock(Cucumber::Cli::Options, :filters => [], :[] => nil)
-      end
     end
   end
 end

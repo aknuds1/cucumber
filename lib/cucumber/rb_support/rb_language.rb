@@ -1,3 +1,4 @@
+require 'cucumber/core_ext/instance_exec'
 require 'cucumber/rb_support/rb_dsl'
 require 'cucumber/rb_support/rb_world'
 require 'cucumber/rb_support/rb_step_definition'
@@ -29,7 +30,8 @@ module Cucumber
     # The Ruby implementation of the programming language API.
     class RbLanguage
       include LanguageSupport::LanguageMethods
-      attr_reader :current_world
+      attr_reader :current_world,
+                  :step_definitions
 
       Gherkin::I18n.code_keywords.each do |adverb|
         RbDsl.alias_adverb(adverb)
@@ -65,7 +67,7 @@ module Cucumber
 
       # Gets called for each file under features (or whatever is overridden
       # with --require).
-      def step_definitions_for(rb_file)
+      def step_definitions_for(rb_file) # Looks Unused - Delete?
         begin
           require rb_file # This will cause self.add_step_definition and self.add_hook to be called from RbDsl
           step_definitions
@@ -76,7 +78,7 @@ module Cucumber
           @step_definitions = nil
         end
       end
-
+      
       def step_matches(name_to_match, name_to_format)
         @step_definitions.map do |step_definition|
           if(arguments = step_definition.arguments_from(name_to_match))
@@ -138,9 +140,9 @@ module Cucumber
       end
 
       def load_code_file(code_file)
-        require File.expand_path(code_file) # This will cause self.add_step_definition, self.add_hook, and self.add_transform to be called from RbDsl
+        load File.expand_path(code_file) # This will cause self.add_step_definition, self.add_hook, and self.add_transform to be called from RbDsl
       end
-
+      
       protected
 
       def begin_scenario(scenario)

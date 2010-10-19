@@ -1,13 +1,36 @@
 == In Git
 
-Maintenance release for the new release of Gherkin 2.2.0.
+=== Bugfixes
+* Prevent MiniTest::Unit#autorun from running in at_exit hook. (Aslak Hellesøy) 
+* Fixed incorect --help for --strict. It fails on both pending and undefined. (Aslak Hellesøy)
+
+== 0.9.2 (2010-10-04)
+
+=== Bugfixes
+* Too many open files - getcwd (#666 Aslak Hellesøy)
+
+== 0.9.1 (2010-10-02)
+
+=== Bugfixes
+* Just a minor internal change to make Cuke4Duke happy. (Aslak Hellesøy)
+
+== 0.9.0 (2010-09-21)
+
+Maintenance release for the new release of Gherkin 2.2.3.
 
 === Bugfixes
 * Compatibility with rspec-2.0.0.beta.19 mocks (Aslak Hellesøy)
 * JUnit formatter now puts output in CDATA sections. (Dmitry Amelchenko)
 
 === New features
+* --dry-run now shows snippets (Ben Hall)
 * Use Bundler for dependency management. (Aslak Hellesøy, Rob Hunter)
+
+=== Removed features
+* No more Jeweler
+
+=== Internal changes
+* Big refactoring of StepMother (Matt Wynne)
 
 == 0.8.5 (2010-07-14)
 

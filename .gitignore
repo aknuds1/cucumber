@@ -1,4 +1,5 @@
 .bundle
+Gemfile.lock
 nbproject
 coverage
 pkg
@@ -20,3 +21,4 @@ target
 *.rbc
 rerun.txt
 ._*
+.rvmrc

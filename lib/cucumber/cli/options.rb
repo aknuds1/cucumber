@@ -199,10 +199,8 @@ module Cucumber
             Term::ANSIColor.coloring = v
           end
           opts.on("-d", "--dry-run", "Invokes formatters without executing the steps.",
-            "This also omits the loading of your support/env.rb file if it exists.",
-            "Implies --no-snippets.") do
+            "This also omits the loading of your support/env.rb file if it exists.") do
             @options[:dry_run] = true
-            @options[:snippets] = false
           end
           opts.on("-a", "--autoformat DIR",
             "Reformats (pretty prints) feature files and write them to DIRECTORY.",
@@ -231,7 +229,7 @@ module Cucumber
           opts.on("-b", "--backtrace", "Show full backtrace for all errors.") do
             Cucumber.use_full_backtrace = true
           end
-          opts.on("-S", "--strict", "Fail if there are any undefined steps.") do
+          opts.on("-S", "--strict", "Fail if there are any undefined or pending steps.") do
             @options[:strict] = true
           end
           opts.on("-w", "--wip", "Fail if there are any passing scenarios.") do

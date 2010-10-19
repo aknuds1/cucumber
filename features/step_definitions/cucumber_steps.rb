@@ -50,12 +50,17 @@ Given /^I have environment variable (\w+) set to "([^"]*)"$/ do |variable, value
 end
 
 When /^I run cucumber (.*)$/ do |cucumber_opts|
-  run "#{Cucumber::RUBY_BINARY} -r rubygems #{Cucumber::BINARY} --no-color #{cucumber_opts} CUCUMBER_OUTPUT_ENCODING=UTF-8"
+  run "#{Cucumber::RUBY_BINARY} -I rubygems #{cucumber_bin} --no-color #{cucumber_opts} CUCUMBER_OUTPUT_ENCODING=UTF-8"
 end
 
 When /^I run rake (.*)$/ do |rake_opts|
   run "rake #{rake_opts} --trace"
 end
+
+When /^I run the following Ruby code:$/ do |code|
+  run %{#{Cucumber::RUBY_BINARY} -r rubygems -I #{cucumber_lib_dir} -e "#{code}"}
+end
+
 
 Then /^it should (fail|pass)$/ do |success|
   if success == 'fail'
@@ -72,7 +77,7 @@ Then /^it should (fail|pass) with$/ do |success, output|
   Then("it should #{success}")
 end
 
-Then /^the output should contain$/ do |text|
+Then /^the output should contain:?$/ do |text|
   last_stdout.should include(text)
 end
 
@@ -157,4 +162,6 @@ Then /^print output$/ do
   puts last_stdout
 end
 
-
+Then /^the output should contain the following JSON:$/ do |json_string|
+  JSON.parse(last_stdout).should == JSON.parse(json_string)
+end

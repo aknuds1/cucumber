@@ -1,18 +1,10 @@
 source "http://rubygems.org"
+gemspec
 
-gem 'gherkin', '~> 2.2.0'
-gem 'term-ansicolor', '~> 1.0.5'
-gem 'builder', '~> 2.1.2'
-gem 'diff-lcs', '~> 1.1.2'
-gem 'json_pure', '~> 1.4.6'
-
-group :development do
-  gem 'rake', '~> 0.8.7'
-  gem 'jeweler', '~> 1.4.0'
-  gem 'nokogiri', '~> 1.4.3'
-  gem 'prawn', '= 0.8.4'
-  gem 'prawn-layout', '= 0.8.4'
-  gem 'rspec', '~> 2.0.0.beta.19'
-  gem 'syntax', '~> 1.0.0'
-  gem 'spork', '~> 0.8.4'
+# Use source from sibling folders (if available) instead of gems
+%w[gherkin].each do |g|
+  if File.directory?(File.dirname(__FILE__) + "/../#{g}")
+    @dependencies.reject!{|dep| dep.name == g}
+    gem g, :path => "../#{g}"
+  end
 end

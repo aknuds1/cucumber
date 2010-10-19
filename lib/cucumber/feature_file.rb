@@ -21,10 +21,10 @@ module Cucumber
     end
     
     # Parses a file and returns a Cucumber::Ast
-    # If +options+ contains tags, the result will
+    # If +configuration_filters+ contains any filters, the result will
     # be filtered.
-    def parse(options, tag_counts)
-      filters = @lines || options.filters
+    def parse(configuration_filters, tag_counts)
+      filters = @lines || configuration_filters
 
       builder             = Cucumber::Parser::GherkinBuilder.new
       filter_formatter    = filters.empty? ? builder : Gherkin::Formatter::FilterFormatter.new(builder, filters)
@@ -38,7 +38,7 @@ module Cucumber
         ast.language = parser.i18n_language
         ast.file = @path
         ast
-      rescue Gherkin::LexingError, Gherkin::Parser::ParseError => e
+      rescue Gherkin::Lexer::LexingError, Gherkin::Parser::ParseError => e
         e.message.insert(0, "#{@path}: ")
         raise e
       end
@@ -58,11 +58,5 @@ module Cucumber
         end
       end
     end
-    
-    private
-    
-    # Special PML markup that we want to filter out.
-    CO = %{\\s*<(label|callout)\s+id=".*?"\s*/>\\s*}
-    C_CALLOUT = %r{/\*#{CO}\*/|//#{CO}}o
   end
 end
