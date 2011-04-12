@@ -20,19 +20,20 @@ module Cucumber
         @scenario_number = 0
         @step_number = 0
         @header_red = nil
+        @delayed_announcements = []
       end
 
-      def embed(file, mime_type)
+      def embed(file, mime_type, label)
         case(mime_type)
         when /^image\/(png|gif|jpg|jpeg)/
-          embed_image(file)
+          embed_image(file, label)
         end
       end
 
-      def embed_image(file)
+      def embed_image(file, label)
         id = file.hash
         @builder.span(:class => 'embed') do |pre|
-          pre << %{<a href="" onclick="img=document.getElementById('#{id}'); img.style.display = (img.style.display == 'none' ? 'block' : 'none');return false">Screenshot</a><br>&nbsp;
+          pre << %{<a href="" onclick="img=document.getElementById('#{id}'); img.style.display = (img.style.display == 'none' ? 'block' : 'none');return false">#{label}</a><br>&nbsp;
           <img id="#{id}" style="display: none" src="#{file}"/>}
         end
       end
@@ -163,6 +164,9 @@ module Cucumber
       end
 
       def scenario_name(keyword, name, file_colon_line, source_indent)
+        @builder.span(:class => 'scenario_file') do
+          @builder << file_colon_line
+        end
         @listing_background = false
         @builder.h3(:id => "scenario_#{@scenario_number}") do
           @builder.span(keyword + ':', :class => 'keyword')
@@ -245,6 +249,7 @@ module Cucumber
           end
         end
         @builder << '</li>'
+        print_announcements
       end
 
       def step_name(keyword, step_match, status, source_indent, background)
@@ -298,6 +303,7 @@ module Cucumber
   
       def after_table_row(table_row)
         return if @hide_this_step
+        print_table_row_announcements
         @builder << '</tr>'
         if table_row.exception
           @builder.tr do
@@ -328,7 +334,34 @@ module Cucumber
       end
 
       def announce(announcement)
-        @builder.pre(announcement, :class => 'announcement')
+        @delayed_announcements << announcement
+        #@builder.pre(announcement, :class => 'announcement')
+      end
+      
+      def print_announcements
+        return if @delayed_announcements.empty?
+        
+        #@builder.ol do
+          @delayed_announcements.each do |ann|
+            @builder.li(:class => 'step announcement') do
+              @builder << ann
+            end
+          end
+        #end
+        empty_announcements
+      end
+      
+      def print_table_row_announcements
+        return if @delayed_announcements.empty?
+        
+        @builder.td(:class => 'announcement') do
+          @builder << @delayed_announcements.join(", ")
+        end
+        empty_announcements
+      end
+      
+      def empty_announcements
+        @delayed_announcements = []
       end
 
       protected
@@ -358,7 +391,7 @@ module Cucumber
       end
 
       def set_scenario_color(status)
-        if status == :undefined
+        if status == :undefined or status == :pending
           set_scenario_color_pending
         end
         if status == :failed
@@ -523,7 +556,7 @@ module Cucumber
       end
 
       def backtrace_line(line)
-        line.gsub(/^([^:]*\.(?:rb|feature|haml)):(\d*)/) do
+        line.gsub(/\A([^:]*\.(?:rb|feature|haml)):(\d*).*\z/) do
           if ENV['TM_PROJECT_DIRECTORY']
             "<a href=\"txmt://open?url=file://#{File.expand_path($1)}&line=#{$2}\">#{$1}:#{$2}</a> "
           else

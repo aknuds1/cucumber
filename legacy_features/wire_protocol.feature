@@ -11,7 +11,7 @@ Feature: Wire Protocol
   #
   # Communication is over a TCP socket, which Cucumber connects to when it finds
   # a definition file with the .wire extension in the step_definitions folder
-  # (or other load path).
+  # (or other load path).  Note that these files are rendered with ERB when loaded.
   #
   # Cucumber sends the following request messages out over the wire:
   #
@@ -31,7 +31,7 @@ Feature: Wire Protocol
   # Some messages support more responses - see below for details.
   #
   # A WirePacket flowing in either direction is formatted as a JSON-encoded
-  # string, with a newline character signalling the end of a packet. See the
+  # string, with a newline character signaling the end of a packet. See the
   # specs for Cucumber::WireSupport::WirePacket for more details.
   #
   # These messages are described in detail below, with examples.
@@ -294,7 +294,7 @@ Feature: Wire Protocol
     Given there is a wire server running on port 54321 which understands the following protocol:
       | request                                                                                          | response                         |
       | ["step_matches",{"name_to_match":"we're all wired"}]                                             | ["success",[]]                   |
-      | ["snippet_text",{"step_keyword":"Given ","multiline_arg_class":"","step_name":"we're all wired"}] | ["success","foo()\n  bar;\nbaz"] |
+      | ["snippet_text",{"step_keyword":"Given","multiline_arg_class":"","step_name":"we're all wired"}] | ["success","foo()\n  bar;\nbaz"] |
       | ["begin_scenario"]                                                                               | ["success"]                      |
       | ["end_scenario"]                                                                                 | ["success"]                      |
     When I run cucumber -f pretty

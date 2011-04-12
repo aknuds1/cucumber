@@ -5,6 +5,21 @@ begin
     class << self
       @@installed_at_exit = true
     end
+
+    def run(*)
+      0
+    end
+  end
+rescue LoadError => ignore
+end
+
+# Do the same for Test::Unit
+begin
+  require 'test/unit'
+  module Test::Unit
+    def self.run?
+      true
+    end
   end
 rescue LoadError => ignore
 end

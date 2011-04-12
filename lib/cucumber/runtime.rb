@@ -1,7 +1,8 @@
+require 'gherkin/rubify'
+require 'gherkin/i18n'
 require 'cucumber/configuration'
 require 'cucumber/language_support/language_methods'
 require 'cucumber/formatter/duration'
-require 'gherkin/rubify'
 require 'cucumber/runtime/user_interface'
 require 'cucumber/runtime/features_loader'
 require 'cucumber/runtime/results'
@@ -16,6 +17,7 @@ module Cucumber
     include Runtime::UserInterface
 
     def initialize(configuration = Configuration.default)
+      require 'cucumber/core_ext/disable_mini_and_test_unit_autorun'
       @current_scenario = nil
       @configuration = Configuration.parse(configuration)
       @support_code = SupportCode.new(self, @configuration)
@@ -68,7 +70,7 @@ module Cucumber
     end
 
     def snippet_text(step_keyword, step_name, multiline_arg_class) #:nodoc:
-      @support_code.snippet_text(step_keyword, step_name, multiline_arg_class)
+      @support_code.snippet_text(Gherkin::I18n.code_keyword_for(step_keyword), step_name, multiline_arg_class)
     end
 
     def with_hooks(scenario, skip_hooks=false)

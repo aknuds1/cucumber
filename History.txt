@@ -1,6 +1,58 @@
-== In Git
+== 0.10.2 (2011-03-21)
 
 === Bugfixes
+* Neuter both MiniTest::Unit and Test::Unit's overzealous test runners. (Aslak Hellesøy)
+
+== 0.10.1 (2011-03-20)
+
+=== New Features
+* The #embed method can take a 3rd optional label argument. In the HTML report that's used for the link title. (Pat Leamon)
+* Render .wire files through ERB (Kevin Olbrich)
+* Happy coexistence with Rake 0.9 (Cezary Baginski)
+* Add -l, --lines option just like rspec's (Gabriel Horner)
+* Support for named transforms. See features/transforms.feature (Matt Wynne)
+* Experimental support for non-UTF-8 encoding in feature files. A "# encoding=iso-8859-1" header (or any other encoding)
+  in the file will read the file in with that encoding and convert it to UTF-8 before it's parsed with gherkin.
+  Step definition arguments will be passed in UTF-8 encoded strings regardless of the encoding in the feature file.
+* Better error message if there is no features directory (David Lindes)
+* Include scenario file reference in html formatter output (Brandon Faloona)
+* Relax gem dependencies to use >= instead of ~> (Rob Slifka, Aslak Hellesøy)
+
+=== Bugfixes
+* Missing methods in Runtime::ForProgrammingLanguages - make v8 example run again (Chris Mytton)
+* Features files are sorted before they are executed, giving consistent results accross different OSes (Guewen Baconnier)
+* Remove duplicate lines in backtraces in the HTML report (Jari Bakken) 
+
+== 0.10.0 (2010-12-07)
+
+We're bumping the minor number in this release because there are some incompatible changes in the JSON support.
+This should not affect users. The major new feature in this release is ANSICON support for Windows users.
+
+=== New Features
+* #map_column! should allow a string or symbol as the column name passed in (Ed Schmalzle)
+* Deprecate win32console and use ANSICON instead (Boško Ivanišević)
+* Set builder dependency to >= 2.1.2, which will work with both Rails 2 and 3. (bUg., David Trasbo, Matt Wynne)
+
+=== Bugfixes
+* Changed the HTML formatter to show Scenarios with 'Pending' steps to be yellow rather than green (Arti)
+
+=== Changed Features
+* JSON output now contains optional "match", "result" and "embeddings" elements underneath each step. (Aslak Hellesøy)
+
+== 0.9.4 (2010-11-07)
+
+=== Bugfixes
+* Superfluous space after step_keyword value in snippet_text message (#679 Aslak Hellesøy)
+* Better Handling for "announce" in HTML formatter (#676 Stephen Kennedy)
+* Too many open files - getcwd (#666 Aslak Hellesøy)
+* Cucumber 0.9.3 prevents Test::Unit from running (#677 Aslak Hellesøy)
+* Performance degradation when running feature files with over 1000 steps (#675 Dimitri Geshef)
+
+== 0.9.3 (2010-10-24)
+
+=== Bugfixes
+* Better JSON representation of Regexps (Aslak Hellesøy)
+* Update to work with latest spork (Matt Wynne)
 * Prevent MiniTest::Unit#autorun from running in at_exit hook. (Aslak Hellesøy) 
 * Fixed incorect --help for --strict. It fails on both pending and undefined. (Aslak Hellesøy)
 

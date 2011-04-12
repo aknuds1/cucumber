@@ -4,7 +4,7 @@ require 'rbconfig'
 
 module Cucumber
 unless defined?(Cucumber::VERSION)
-  VERSION       = '0.9.3'
+  VERSION       = '0.10.2'
   BINARY        = File.expand_path(File.dirname(__FILE__) + '/../../bin/cucumber')
   LIBDIR        = File.expand_path(File.dirname(__FILE__) + '/../../lib')
   JRUBY         = defined?(JRUBY_VERSION)
@@ -20,8 +20,8 @@ unless defined?(Cucumber::VERSION)
   class << self
     attr_accessor :use_full_backtrace
 
-    def file_mode(m) #:nodoc:
-      RUBY_1_9 ? "#{m}:UTF-8" : m
+    def file_mode(m, encoding="UTF-8") #:nodoc:
+      RUBY_1_9 ? "#{m}:#{encoding}" : m
     end
   end
   self.use_full_backtrace = false
