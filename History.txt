@@ -1,3 +1,10 @@
+== In Git
+
+=== New Features
+* New bundler attribute on the Rake task, allowing faster execution. (Aslak Hellesøy)
+* Fix Table#rows cell ordering in ruby 1.8. (#47_github Brian Dunn)
+* JUnit Formatter: record skipped/pending/undefined scenario results (#655 meeee)
+
 == 0.10.2 (2011-03-21)
 
 === Bugfixes
@@ -20,7 +27,7 @@
 
 === Bugfixes
 * Missing methods in Runtime::ForProgrammingLanguages - make v8 example run again (Chris Mytton)
-* Features files are sorted before they are executed, giving consistent results accross different OSes (Guewen Baconnier)
+* Features files are sorted before they are executed, giving consistent results across different OSes (Guewen Baconnier)
 * Remove duplicate lines in backtraces in the HTML report (Jari Bakken) 
 
 == 0.10.0 (2010-12-07)
