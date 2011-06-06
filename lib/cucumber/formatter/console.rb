@@ -26,13 +26,15 @@ module Cucumber
         format_string(line, status)
       end
 
-      def format_string(string, status)
+      def format_string(o, status)
         fmt = format_for(status)
-        if Proc === fmt
-          fmt.call(string)
-        else
-          fmt % string
-        end
+        o.to_s.split("\n").map do |line|
+          if Proc === fmt
+            fmt.call(line)
+          else
+            fmt % line
+          end
+        end.join("\n")
       end
 
       def print_steps(status)
@@ -129,39 +131,41 @@ module Cucumber
         # no-op
       end
 
-      #define @delayed_announcements = [] in your Formatter if you want to
+      #define @delayed_messages = [] in your Formatter if you want to
       #activate this feature
-      def announce(announcement)
-        if @delayed_announcements
-          @delayed_announcements << announcement
+      def puts(*messages)
+        if @delayed_messages
+          @delayed_messages += messages
         else
           if @io
             @io.puts
-            @io.puts(format_string(announcement, :tag))
+            messages.each do |message|
+              @io.puts(format_string(message, :tag))
+            end
             @io.flush
           end
         end
       end
 
-      def print_announcements()
-        @delayed_announcements.each {|ann| print_announcement(ann)}
-        empty_announcements
+      def print_messages
+        @delayed_messages.each {|message| print_message(message)}
+        empty_messages
       end
 
-      def print_table_row_announcements
-        return if @delayed_announcements.empty?
-        @io.print(format_string(@delayed_announcements.join(', '), :tag).indent(2))
+      def print_table_row_messages
+        return if @delayed_messages.empty?
+        @io.print(format_string(@delayed_messages.join(', '), :tag).indent(2))
         @io.flush
-        empty_announcements
+        empty_messages
       end
 
-      def print_announcement(announcement)
-        @io.puts(format_string(announcement, :tag).indent(@indent))
+      def print_message(message)
+        @io.puts(format_string(message, :tag).indent(@indent))
         @io.flush
       end
 
-      def empty_announcements
-        @delayed_announcements = []
+      def empty_messages
+        @delayed_messages = []
       end
 
     private

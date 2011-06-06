@@ -52,48 +52,71 @@ module Cucumber
       end
 
       class ForkedCucumberRunner #:nodoc:
-        attr_reader :args
 
         def initialize(libs, cucumber_bin, cucumber_opts, bundler, feature_files)
-          @bundler = bundler
-          @args = (
-            ['-I'] + load_path(libs) +
-            quoted_binary(cucumber_bin) +
-            cucumber_opts +
-            feature_files
-          ).flatten
+          @libs          = libs
+          @cucumber_bin  = cucumber_bin
+          @cucumber_opts = cucumber_opts
+          @bundler       = bundler
+          @feature_files = feature_files
         end
 
         def load_path(libs)
-          ['"%s"' % libs.join(File::PATH_SEPARATOR)]
+          ['"%s"' % @libs.join(File::PATH_SEPARATOR)]
         end
 
         def quoted_binary(cucumber_bin)
           ['"%s"' % cucumber_bin]
         end
 
-        def runner
-          use_bundler = @bundler.nil? ? File.exist?("./Gemfile") && Gem.available?("bundler") : @bundler
-          use_bundler ? ["bundle", "exec", RUBY] : [RUBY]
+        def use_bundler
+          @bundler.nil? ? File.exist?("./Gemfile") && gem_available?("bundler") : @bundler
+        end
+
+        def gem_available?(gemname)
+          gem_available_new_rubygems?(gemname) || gem_available_old_rubygems?(gemname)
+        end
+
+        def gem_available_old_rubygems?(gemname)
+          Gem.available?(gemname)
+        end
+
+        def gem_available_new_rubygems?(gemname)
+          Gem::Specification.respond_to?(:find_all_by_name) && Gem::Specification.find_all_by_name(gemname).any?
+        end
+
+        def cmd
+          if use_bundler
+            [ RUBY, '-S', 'bundle', 'exec', 'cucumber', @cucumber_opts,
+            @feature_files ].flatten
+          else
+            [ RUBY, '-I', load_path(@libs), quoted_binary(@cucumber_bin),
+            @cucumber_opts, @feature_files ].flatten
+          end
         end
 
         def run
-          sh((runner + args).join(" "))
+          sh(cmd.join(" "))
         end
       end
 
       class RCovCucumberRunner < ForkedCucumberRunner #:nodoc:
+
         def initialize(libs, cucumber_bin, cucumber_opts, bundler, feature_files, rcov_opts)
-          @bundler = bundler
-          @args = (
-            ['-I'] + load_path(libs) +
-            ['-S', 'rcov'] + rcov_opts +
-            quoted_binary(cucumber_bin) +
-            ['--'] +
-            cucumber_opts +
-            feature_files
-          ).flatten
+          super(       libs, cucumber_bin, cucumber_opts, bundler, feature_files )
+          @rcov_opts = rcov_opts
         end
+
+        def cmd
+          if use_bundler
+            [RUBY, '-S', 'bundle', 'exec', 'rcov', @rcov_opts,
+             quoted_binary(@cucumber_bin), '--', @cucumber_opts, @feature_files].flatten
+          else
+            [RUBY, '-I', load_path(@libs), '-S', 'rcov', @rcov_opts,
+             quoted_binary(@cucumber_bin), '--', @cucumber_opts, @feature_files].flatten
+          end
+        end
+        
       end
 
       LIB = File.expand_path(File.dirname(__FILE__) + '/../..') #:nodoc:
@@ -163,7 +186,7 @@ module Cucumber
       def runner(task_args = nil) #:nodoc:
         cucumber_opts = [(ENV['CUCUMBER_OPTS'] ? ENV['CUCUMBER_OPTS'].split(/\s+/) : nil) || cucumber_opts_with_profile]
         if(@rcov)
-          RCovCucumberRunner.new(libs, binary, cucumber_opts, feature_files, bundler, rcov_opts)
+          RCovCucumberRunner.new(libs, binary, cucumber_opts, bundler, feature_files, rcov_opts)
         elsif(@fork)
           ForkedCucumberRunner.new(libs, binary, cucumber_opts, bundler, feature_files)
         else

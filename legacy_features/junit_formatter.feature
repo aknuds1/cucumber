@@ -34,6 +34,34 @@ Feature: JUnit output formatter
 
       """
   
+  Scenario: one feature in a subdirectory, one passing scenario, one failing scenario
+    When I run cucumber --format junit --out tmp/ features/some_subdirectory/one_passing_one_failing.feature --require features
+    Then it should fail with
+      """
+
+      """
+    And "fixtures/junit/tmp/TEST-some_subdirectory_one_passing_one_failing.xml" with junit duration "0.005" should contain
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <testsuite errors="0" failures="1" name="Subdirectory - One passing scenario, one failing scenario" skipped="0" tests="2" time="0.005">
+      <testcase classname="Subdirectory - One passing scenario, one failing scenario.Passing" name="Passing" time="0.005">
+      </testcase>
+      <testcase classname="Subdirectory - One passing scenario, one failing scenario.Failing" name="Failing" time="0.005">
+        <failure message="failed Failing" type="failed">
+          <![CDATA[Scenario: Failing
+
+      Given a failing scenario
+
+      Message:
+	]]>
+          <![CDATA[ (RuntimeError)
+	features/some_subdirectory/one_passing_one_failing.feature:7:in `Given a failing scenario']]>
+        </failure>
+      </testcase>
+      </testsuite>
+
+      """
+  
   Scenario: pending and undefined steps are reported as skipped
     When I run cucumber --format junit --out tmp/ features/pending.feature
     Then it should pass with
@@ -105,3 +133,32 @@ can't convert .* into String \(TypeError\)
       """
 You \*must\* specify \-\-out DIR for the junit formatter
       """
+
+  Scenario: one feature, one scenario outline, two examples: one passing, one failing
+    When I run cucumber --format junit --out tmp/ features/scenario_outline.feature
+    Then it should fail with
+      """
+
+      """
+    And "fixtures/junit/tmp/TEST-scenario_outline.xml" with junit duration "0.005" should contain
+      """
+      <?xml version="1.0" encoding="UTF-8"?>
+      <testsuite errors="0" failures="1" name="Scenario outlines" skipped="0" tests="2" time="0.005">
+      <testcase classname="Scenario outlines.Using scenario outlines" name="Using scenario outlines (outline example : | passing |)" time="0.005">
+      </testcase>
+      <testcase classname="Scenario outlines.Using scenario outlines" name="Using scenario outlines (outline example : | failing |)" time="0.005">
+        <failure message="failed Using scenario outlines (outline example : | failing |)" type="failed">
+          <![CDATA[Scenario Outline: Using scenario outlines
+      
+      Example row: | failing |
+      
+      Message:
+      ]]>
+          <![CDATA[ (RuntimeError)
+      features/scenario_outline.feature:4:in `Given a <type> scenario']]>
+        </failure>
+      </testcase>
+      </testsuite>
+
+      """
+  

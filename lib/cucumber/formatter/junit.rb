@@ -26,6 +26,10 @@ module Cucumber
         @time = 0
       end
       
+      def before_feature_element(feature_element)
+        @in_examples = Ast::ScenarioOutline === feature_element
+      end
+      
       def after_feature(feature)
         @testsuite = OrderedXmlMarkup.new( :indent => 2 )
         @testsuite.instruct!
@@ -57,13 +61,8 @@ module Cucumber
       end
 
       def scenario_name(keyword, name, file_colon_line, source_indent)
-        # TODO: What's all this ugly weird code doing? Why not just use keyword and name????
-        scenario_name = name.strip.delete(".\r\n")
-        scenario_name = "Unnamed scenario" if name == ""
-        @scenario = scenario_name
-        description = "Scenario"
-        description << " outline" if keyword.include?('Scenario Outline')
-        @output = "#{description}: #{@scenario}\n\n"
+        @scenario = (name.nil? || name == "") ? "Unnamed scenario" : name.split("\n")[0]
+        @output = "#{keyword}: #{@scenario}\n\n"
       end
 
       def before_steps(steps)
@@ -97,7 +96,7 @@ module Cucumber
       end
 
       def after_table_row(table_row)
-        return unless @in_examples
+        return unless @in_examples and Cucumber::Ast::OutlineTable::ExampleRow === table_row
         duration = Time.now - @table_start
         unless @header_row
           name_suffix = " (outline example : #{table_row.name})"
@@ -141,9 +140,12 @@ module Cucumber
       end
       
       def feature_result_filename(feature_file)
+        File.join(@reportdir, "TEST-#{basename(feature_file)}.xml")
+      end
+      
+      def basename(feature_file)
         ext_length = File.extname(feature_file).length
-        basename = File.basename(feature_file)[0...-ext_length]
-        File.join(@reportdir, "TEST-#{basename}.xml")
+        feature_file.gsub('features/', '').gsub(File::SEPARATOR, '_')[0...-ext_length]
       end
       
       def write_file(feature_filename, data)

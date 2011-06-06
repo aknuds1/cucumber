@@ -16,14 +16,14 @@ Gem::Specification.new do |s|
 (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
 
 Thank you for installing cucumber-#{Cucumber::VERSION}.
-Please be sure to read http://wiki.github.com/aslakhellesoy/cucumber/upgrading
+Please be sure to read http://wiki.github.com/cucumber/cucumber/upgrading
 for important information about this release. Happy cuking!
 
 (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
 
 }
 
-  s.add_dependency 'gherkin', '>= 2.3.7'
+  s.add_dependency 'gherkin', '~> 2.4.0'
   s.add_dependency 'term-ansicolor', '>= 1.0.5'
   s.add_dependency 'builder', '>= 2.1.2'
   s.add_dependency 'diff-lcs', '>= 1.1.2'
@@ -31,20 +31,20 @@ for important information about this release. Happy cuking!
   
   s.add_development_dependency 'aruba', '>= 0.3.6'
   s.add_development_dependency 'rake', '>= 0.8.7'
-  s.add_development_dependency 'rspec', '>= 2.5.0'
+  s.add_development_dependency 'rspec', '>= 2.6.0'
   s.add_development_dependency 'nokogiri', '>= 1.4.4'
   s.add_development_dependency 'prawn', '= 0.8.4'
   s.add_development_dependency 'prawn-layout', '= 0.8.4'
   s.add_development_dependency 'syntax', '>= 1.0.0'
-  s.add_development_dependency 'spork', '>= 0.8.4'
-  s.add_development_dependency 'simplecov', '>= 0.4.1'
+  s.add_development_dependency 'spork', '>= 0.9.0.rc7'
+  s.add_development_dependency 'simplecov', '>= 0.4.2'
   
   # Needed for examples (rake examples)
   s.add_development_dependency 'ramaze'
   s.add_development_dependency 'rack-test', '>= 0.5.7'
   s.add_development_dependency 'webrat', '>= 0.7.3'
-  s.add_development_dependency 'sinatra', '>= 1.2.0'
-  s.add_development_dependency 'capybara', '>= 0.4.1'
+  s.add_development_dependency 'sinatra', '>= 1.2.6'
+  s.add_development_dependency 'capybara', '>= 1.0.0.beta1'
 
   s.rubygems_version = ">= 1.6.1"
   s.files            = `git ls-files`.split("\n")
